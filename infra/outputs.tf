@@ -3,10 +3,10 @@ output "cloudfront_url" {
   value       = "https://${module.cdn.cloudfront_domain_name}"
 }
 
-output "site_url" {
-  description = "Custom domain URL"
-  value       = "https://${var.domain_name}"
-}
+# output "site_url" {
+#   description = "Custom domain URL"
+#   value       = "https://${var.domain_name}"
+# }
 
 output "s3_bucket_name" {
   description = "S3 bucket name for website files"
@@ -23,7 +23,7 @@ output "api_endpoint" {
   value       = module.api.api_endpoint
 }
 
-output "name_servers" {
-  description = "Route 53 name servers — configure in your domain registrar if no usando Route 53"
-  value       = module.dns.name_servers
-}
+# output "name_servers" {
+#   description = "Route 53 name servers"
+#   value       = module.dns.name_servers
+# }

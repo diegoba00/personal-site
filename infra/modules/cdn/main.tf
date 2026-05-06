@@ -1,8 +1,7 @@
 terraform {
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      configuration_aliases = [aws.us_east_1]
+      source = "hashicorp/aws"
     }
   }
 }
@@ -65,13 +64,14 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
-  aliases = var.domain_name != "" ? [var.domain_name, "www.${var.domain_name}"] : []
+  # aliases y certificado custom — descomentar cuando el dominio esté activo
+  # aliases = [var.domain_name, "www.${var.domain_name}"]
 
   viewer_certificate {
-    cloudfront_default_certificate = var.certificate_arn == "" ? true : false
-    acm_certificate_arn            = var.certificate_arn != "" ? var.certificate_arn : null
-    ssl_support_method             = var.certificate_arn != "" ? "sni-only" : null
-    minimum_protocol_version       = var.certificate_arn != "" ? "TLSv1.2_2021" : null
+    cloudfront_default_certificate = true
+    # acm_certificate_arn      = var.certificate_arn
+    # ssl_support_method       = "sni-only"
+    # minimum_protocol_version = "TLSv1.2_2021"
   }
 
   custom_error_response {
