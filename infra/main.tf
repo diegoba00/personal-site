@@ -44,6 +44,14 @@ module "api" {
   aws_region   = var.aws_region
 }
 
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  project_name         = var.project_name
+  alert_email          = var.alert_email
+  lambda_function_name = module.api.lambda_function_name
+}
+
 # A record apuntando a CloudFront — descomentar cuando el dominio esté activo
 # resource "aws_route53_record" "root" {
 #   zone_id = module.dns.zone_id
