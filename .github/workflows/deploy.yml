@@ -13,6 +13,8 @@ jobs:
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
     outputs:
       bucket: ${{ steps.tf-outputs.outputs.bucket }}
       distribution: ${{ steps.tf-outputs.outputs.distribution }}
