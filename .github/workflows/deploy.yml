@@ -58,6 +58,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
+      - name: Inject secrets
+        run: |
+          sed -i 's/WHATSAPP_NUMBER_PLACEHOLDER/${{ secrets.WHATSAPP_NUMBER }}/g' web/index.html
+
       - name: Sync to S3
         run: |
           aws s3 sync web/ s3://${{ needs.terraform.outputs.bucket }} \
