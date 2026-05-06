@@ -1,5 +1,6 @@
 # Terraform
 .terraform/
+**/*.zip
 .terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
