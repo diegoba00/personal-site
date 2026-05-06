@@ -1,0 +1,69 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: infra
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: infra
+        run: terraform apply -auto-approve
+
+      - name: Get outputs
+        working-directory: infra
+        id: tf-outputs
+        run: |
+          echo "bucket=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
+          echo "distribution=$(terraform output -raw cloudfront_distribution_id 2>/dev/null || echo '')" >> $GITHUB_OUTPUT
+
+  deploy-web:
+    name: Deploy Web
+    runs-on: ubuntu-latest
+    needs: terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync web/ s3://${{ needs.terraform.outputs.bucket }} \
+            --delete \
+            --cache-control "max-age=86400"
+
+      - name: Invalidate CloudFront cache
+        if: needs.terraform.outputs.distribution != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ needs.terraform.outputs.distribution }} \
+            --paths "/*"

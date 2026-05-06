@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diego Ayala — CV</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1>Diego Hernán Ayala</h1>
+    <p class="tagline"><!-- Tu título profesional acá --></p>
+    <p class="visitors">Visitas: <span id="visitor-count">...</span></p>
+  </main>
+
+  <script>
+    fetch("API_ENDPOINT_PLACEHOLDER")
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById("visitor-count").textContent = data.visitors;
+      })
+      .catch(() => {
+        document.getElementById("visitor-count").textContent = "—";
+      });
+  </script>
+</body>
+</html>
