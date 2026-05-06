@@ -7,6 +7,11 @@ variable "domain_name" {
   default = ""
 }
 
+variable "certificate_arn" {
+  type    = string
+  default = ""
+}
+
 variable "aws_region" {
   type = string
 }

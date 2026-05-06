@@ -11,7 +11,7 @@ variable "aws_region" {
 }
 
 variable "domain_name" {
-  description = "Custom domain name (leave empty to use CloudFront URL)"
+  description = "Custom domain name"
   type        = string
-  default     = ""
+  default     = "diegoayala.click"
 }
