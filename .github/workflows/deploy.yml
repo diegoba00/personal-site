@@ -64,7 +64,9 @@ jobs:
         id: api-endpoint
         working-directory: infra
         run: |
-          echo "endpoint=$(terraform output -raw api_endpoint)" >> $GITHUB_OUTPUT
+          ENDPOINT=$(terraform output -raw api_endpoint)
+          echo "Terraform output api_endpoint: $ENDPOINT"
+          echo "endpoint=$ENDPOINT" >> $GITHUB_OUTPUT
 
       - name: Inject secrets
         run: |
