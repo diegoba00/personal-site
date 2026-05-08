@@ -1,14 +1,25 @@
+# DynamoDB: Base de datos para el contador de visitantes
+# ¿Por qué DynamoDB?
+# - Pay-per-request: pagas SOLO por requests (no por servidores corriendo 24/7)
+# - Sin mantenimiento: AWS gestiona backups, replicación, etc
+# - Rápido: responde en <100ms incluso bajo carga
+# ¿Qué sería la alternativa? Servidor SQL tradicional + mantenimiento + costo fijo
 resource "aws_dynamodb_table" "visitors" {
   name         = "${var.project_name}-visitors"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "id"
+  billing_mode = "PAY_PER_REQUEST"  # Paga por uso, no por capacidad reservada
+  hash_key     = "id"               # Clave primaria: "visitors"
 
   attribute {
     name = "id"
-    type = "S"
+    type = "S"  # String
   }
 }
 
+# IAM Role para Lambda
+# ¿Por qué IAM role?
+# - Seguridad: Lambda NO tiene acceso a TODO en AWS
+# - Principio de menor privilegio: solo acceso a lo que necesita (DynamoDB + logs)
+# - Si alguien compromete Lambda, solo puede acceder a estos recursos, no a toda tu cuenta
 resource "aws_iam_role" "lambda" {
   name = "${var.project_name}-lambda-role"
 
@@ -22,6 +33,11 @@ resource "aws_iam_role" "lambda" {
   })
 }
 
+# Política IAM: Lambda solo puede hacer GetItem + UpdateItem en la tabla de visitantes
+# ¿Por qué estas específicas?
+# - GetItem: leer el contador actual (aunque no lo hacemos explícitamente, UpdateItem retorna el valor)
+# - UpdateItem: incrementar el contador
+# Lambda NO puede: deletear, crear tablas, acceder a otro recurso, etc
 resource "aws_iam_role_policy" "lambda_dynamodb" {
   name = "dynamodb-access"
   role = aws_iam_role.lambda.id
@@ -50,6 +66,13 @@ data "archive_file" "lambda" {
   output_path = "${path.module}/function/handler.zip"
 }
 
+# Lambda: Función serverless que incrementa el contador
+# ¿Por qué Lambda?
+# - Pagas SOLO cuando se ejecuta (no 24/7)
+# - 1 millón de ejecuciones = ~$0.20 (gratis en free tier)
+# - Sin servidor que mantener
+# - Se escala automáticamente (si llegan 1000 requests/seg, Lambda crea 1000 instancias)
+# ¿Qué pasaría sin Lambda? Servidor Node/Python corriendo $15/mes mínimo
 resource "aws_lambda_function" "visitors" {
   filename         = data.archive_file.lambda.output_path
   function_name    = "${var.project_name}-visitors"
@@ -65,6 +88,13 @@ resource "aws_lambda_function" "visitors" {
   }
 }
 
+# API Gateway v2 (HTTP API): Puerta de entrada a Lambda
+# ¿Por qué API Gateway?
+# - No puedes llamar Lambda directamente desde el navegador
+# - API Gateway expone Lambda como endpoint HTTP REST
+# - Rate-limiting integrado (protege contra bots)
+# - CORS integrado (controla qué dominios pueden acceder)
+# ¿Qué pasaría sin API Gateway? Necesitarías un proxy manual o exponer Lambda inseguramente
 resource "aws_apigatewayv2_api" "visitors" {
   name          = "${var.project_name}-api"
   protocol_type = "HTTP"
@@ -92,6 +122,12 @@ resource "aws_apigatewayv2_route" "visitors" {
   target    = "integrations/${aws_apigatewayv2_integration.visitors.id}"
 }
 
+# API Stage: Versión desplegada del API con rate-limiting
+# ¿Por qué rate-limiting?
+# - Sin esto: bot hace 10000 requests/seg → DynamoDB factura $500+
+# - Con esto: bot hace 10000 requests/seg → rechazado después del 5to → costo: $0
+# - rate_limit = 2: máximo 2 requests/segundo por cliente
+# - burst_limit = 5: permite picos de hasta 5 requests antes de throttle
 resource "aws_apigatewayv2_stage" "visitors" {
   api_id      = aws_apigatewayv2_api.visitors.id
   name        = "$default"
