@@ -18,6 +18,7 @@ jobs:
     outputs:
       bucket: ${{ steps.tf-outputs.outputs.bucket }}
       distribution: ${{ steps.tf-outputs.outputs.distribution }}
+      api_endpoint: ${{ steps.tf-outputs.outputs.api_endpoint }}
     steps:
       - uses: actions/checkout@v4
 
@@ -46,6 +47,7 @@ jobs:
         run: |
           echo "bucket=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
           echo "distribution=$(terraform output -raw cloudfront_distribution_id 2>/dev/null || echo '')" >> $GITHUB_OUTPUT
+          echo "api_endpoint=$(terraform output -raw api_endpoint)" >> $GITHUB_OUTPUT
 
   deploy-web:
     name: Deploy Web
@@ -60,17 +62,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
-      - name: Get API endpoint
-        id: api-endpoint
-        working-directory: infra
-        run: |
-          ENDPOINT=$(terraform output -raw api_endpoint)
-          echo "Terraform output api_endpoint: $ENDPOINT"
-          echo "endpoint=$ENDPOINT" >> $GITHUB_OUTPUT
-
       - name: Inject secrets
         run: |
-          sed -i 's|API_ENDPOINT_PLACEHOLDER|${{ steps.api-endpoint.outputs.endpoint }}|g' web/index.html
+          sed -i 's|API_ENDPOINT_PLACEHOLDER|${{ needs.terraform.outputs.api_endpoint }}|g' web/index.html
           sed -i 's/WHATSAPP_NUMBER_PLACEHOLDER/${{ secrets.WHATSAPP_NUMBER }}/g' web/index.html
 
       - name: Sync to S3
