@@ -60,8 +60,15 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
+      - name: Get API endpoint
+        id: api-endpoint
+        working-directory: infra
+        run: |
+          echo "endpoint=$(terraform output -raw api_endpoint)" >> $GITHUB_OUTPUT
+
       - name: Inject secrets
         run: |
+          sed -i 's|API_ENDPOINT_PLACEHOLDER|${{ steps.api-endpoint.outputs.endpoint }}|g' web/index.html
           sed -i 's/WHATSAPP_NUMBER_PLACEHOLDER/${{ secrets.WHATSAPP_NUMBER }}/g' web/index.html
 
       - name: Sync to S3
