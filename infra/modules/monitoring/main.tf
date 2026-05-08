@@ -24,3 +24,39 @@ resource "aws_cloudwatch_metric_alarm" "high_visitors" {
     FunctionName = var.lambda_function_name
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
+  alarm_name          = "${var.project_name}-lambda-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 5
+  alarm_description   = "Lambda function has ${var.lambda_function_name} errors — check logs"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    FunctionName = var.lambda_function_name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "api_gateway_client_errors" {
+  alarm_name          = "${var.project_name}-api-4xx-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "4XXError"
+  namespace           = "AWS/ApiGateway"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 50
+  alarm_description   = "High rate of client errors (4xx) — possible attacks"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    ApiId = var.api_id
+  }
+}

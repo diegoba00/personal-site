@@ -1,0 +1,46 @@
+{
+  "template_version": "1.0",
+  "description": "AWS static site: S3 + CloudFront + Lambda + API Gateway + GitHub Actions CI/CD",
+  "variables": {
+    "project_name": {
+      "value": "dha-personal-site",
+      "description": "Identificador del proyecto para recursos AWS (kebab-case, ej: cliente-portfolio)"
+    },
+    "domain_name": {
+      "value": "diegoayala.click",
+      "description": "Dominio custom del site"
+    },
+    "github_username": {
+      "value": "diegoba00",
+      "description": "Usuario de GitHub dueño del repo"
+    },
+    "github_repo": {
+      "value": "personal-site",
+      "description": "Nombre del repositorio en GitHub"
+    },
+    "aws_account_id": {
+      "value": "447437755844",
+      "description": "AWS Account ID donde se despliega"
+    },
+    "tf_state_bucket": {
+      "value": "dha-personal-site-tfstate",
+      "description": "S3 bucket para el estado de Terraform (debe ser único globalmente)"
+    },
+    "tf_state_lock_table": {
+      "value": "dha-personal-site-tfstate-lock",
+      "description": "DynamoDB table para el lock del estado de Terraform"
+    },
+    "iam_role_name": {
+      "value": "github-actions-personal-site",
+      "description": "Nombre del IAM role para GitHub Actions OIDC"
+    },
+    "page_title": {
+      "value": "Diego Ayala — CV",
+      "description": "Título de la página HTML"
+    },
+    "owner_name": {
+      "value": "Diego Hernán Ayala",
+      "description": "Nombre completo que aparece en el site"
+    }
+  }
+}

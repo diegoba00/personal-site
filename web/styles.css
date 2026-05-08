@@ -10,11 +10,14 @@ body {
   color: #e2e8f0;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 4rem 1.5rem;
 }
 
 main {
+  width: 100%;
+  max-width: 680px;
   text-align: center;
 }
 
@@ -55,4 +58,32 @@ h1 {
 .whatsapp-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+section[data-section] {
+  margin-top: 3rem;
+  text-align: left;
+}
+
+section[data-section] h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+section[data-section] p {
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+section[data-section] ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #94a3b8;
+  line-height: 1.6;
 }

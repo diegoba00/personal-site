@@ -70,7 +70,10 @@ resource "aws_apigatewayv2_api" "visitors" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = ["*"]
+    allow_origins = concat(
+      var.allowed_origins,
+      ["https://d7m6q6tk9m4xj.cloudfront.net"]  # CloudFront default mientras no esté el dominio
+    )
     allow_methods = ["GET"]
     allow_headers = ["Content-Type"]
   }
@@ -95,8 +98,8 @@ resource "aws_apigatewayv2_stage" "visitors" {
   auto_deploy = true
 
   default_route_settings {
-    throttling_rate_limit  = 5
-    throttling_burst_limit = 10
+    throttling_rate_limit  = 2
+    throttling_burst_limit = 5
   }
 }
 

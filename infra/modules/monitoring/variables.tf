@@ -12,6 +12,11 @@ variable "lambda_function_name" {
   type        = string
 }
 
+variable "api_id" {
+  description = "API Gateway ID for monitoring"
+  type        = string
+}
+
 variable "visitor_alarm_threshold" {
   description = "Max Lambda invocations per hour before alerting"
   type        = number

@@ -5,3 +5,9 @@ variable "project_name" {
 variable "aws_region" {
   type = string
 }
+
+variable "allowed_origins" {
+  type        = list(string)
+  description = "Additional CORS origins to allow (e.g., custom domains)"
+  default     = []
+}

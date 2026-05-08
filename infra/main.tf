@@ -50,6 +50,7 @@ module "monitoring" {
   project_name         = var.project_name
   alert_email          = var.alert_email
   lambda_function_name = module.api.lambda_function_name
+  api_id               = module.api.api_id
 }
 
 # A record apuntando a CloudFront — descomentar cuando el dominio esté activo
