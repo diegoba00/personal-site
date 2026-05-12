@@ -42,8 +42,12 @@ module "cdn" {
 module "api" {
   source = "./modules/api"
 
-  project_name = var.project_name
-  aws_region   = var.aws_region
+  project_name    = var.project_name
+  aws_region      = var.aws_region
+  allowed_origins = [
+    "https://${var.domain_name}",
+    "https://www.${var.domain_name}",
+  ]
 }
 
 module "monitoring" {
