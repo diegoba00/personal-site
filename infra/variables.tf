@@ -13,7 +13,7 @@ variable "aws_region" {
 variable "domain_name" {
   description = "Custom domain name"
   type        = string
-  default     = "diegoayala.click"
+  default     = "diegohacloud.click"
 }
 
 variable "alert_email" {
