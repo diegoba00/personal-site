@@ -20,3 +20,9 @@ variable "alert_email" {
   description = "Email address to receive CloudWatch alerts"
   type        = string
 }
+
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID for diegohacloud.click"
+  type        = string
+  default     = "85ddceff518d3681774df218ebe928e9"
+}

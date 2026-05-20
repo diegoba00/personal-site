@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
 }
 
@@ -19,10 +23,15 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "cloudflare" {
+  # Token leído de CLOUDFLARE_API_TOKEN (env var / GitHub secret)
+}
+
 module "dns" {
   source = "./modules/dns"
 
-  domain_name = var.domain_name
+  domain_name        = var.domain_name
+  cloudflare_zone_id = var.cloudflare_zone_id
 
   providers = {
     aws           = aws
@@ -59,26 +68,20 @@ module "monitoring" {
   api_id               = module.api.api_id
 }
 
-resource "aws_route53_record" "root" {
-  zone_id = module.dns.zone_id
+resource "cloudflare_record" "root" {
+  zone_id = var.cloudflare_zone_id
   name    = var.domain_name
-  type    = "A"
-
-  alias {
-    name                   = module.cdn.cloudfront_domain_name
-    zone_id                = "Z2FDTNDATAQYW2"
-    evaluate_target_health = false
-  }
+  content = module.cdn.cloudfront_domain_name
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
 }
 
-resource "aws_route53_record" "www" {
-  zone_id = module.dns.zone_id
-  name    = "www.${var.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = module.cdn.cloudfront_domain_name
-    zone_id                = "Z2FDTNDATAQYW2"
-    evaluate_target_health = false
-  }
+resource "cloudflare_record" "www" {
+  zone_id = var.cloudflare_zone_id
+  name    = "www"
+  content = module.cdn.cloudfront_domain_name
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
 }

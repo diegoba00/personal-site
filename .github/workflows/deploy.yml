@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     outputs:
       bucket: ${{ steps.tf-outputs.outputs.bucket }}
       distribution: ${{ steps.tf-outputs.outputs.distribution }}
