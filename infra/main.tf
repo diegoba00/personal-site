@@ -69,19 +69,21 @@ module "monitoring" {
 }
 
 resource "cloudflare_record" "root" {
-  zone_id = var.cloudflare_zone_id
-  name    = var.domain_name
-  content = module.cdn.cloudfront_domain_name
-  type    = "CNAME"
-  ttl     = 1
-  proxied = false
+  zone_id         = var.cloudflare_zone_id
+  name            = var.domain_name
+  content         = module.cdn.cloudfront_domain_name
+  type            = "CNAME"
+  ttl             = 1
+  proxied         = false
+  allow_overwrite = true
 }
 
 resource "cloudflare_record" "www" {
-  zone_id = var.cloudflare_zone_id
-  name    = "www"
-  content = module.cdn.cloudfront_domain_name
-  type    = "CNAME"
-  ttl     = 1
-  proxied = false
+  zone_id         = var.cloudflare_zone_id
+  name            = "www"
+  content         = module.cdn.cloudfront_domain_name
+  type            = "CNAME"
+  ttl             = 1
+  proxied         = false
+  allow_overwrite = true
 }
