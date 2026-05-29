@@ -73,7 +73,7 @@ resource "cloudflare_record" "root" {
   name            = var.domain_name
   content         = module.cdn.cloudfront_domain_name
   type            = "CNAME"
-  ttl             = 1
+  ttl             = 43200
   proxied         = false
   allow_overwrite = true
 }
@@ -83,7 +83,7 @@ resource "cloudflare_record" "www" {
   name            = "www"
   content         = module.cdn.cloudfront_domain_name
   type            = "CNAME"
-  ttl             = 1
+  ttl             = 43200
   proxied         = false
   allow_overwrite = true
 }
